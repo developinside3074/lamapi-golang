@@ -18,12 +18,12 @@ func createUser(c echo.Context) error {
 		// INSERT INTO "users" (name) VALUES (user.Name);
 		db.Create(&user)
 		// Display JSON result
-		return c.JSON(http.StatusCreated, map[string]Users{
+		return c.JSON(http.StatusCreated, map[string]interface{}{
 			"data": user,
 		})
 	} else {
 		// Display error
-		return c.JSON(http.StatusUnprocessableEntity, map[string]string{
+		return c.JSON(http.StatusUnprocessableEntity, map[string]interface{}{
 			"error": "Fields are empty",
 		})
 	}
@@ -42,7 +42,7 @@ func getUsers(c echo.Context) error {
 	db.Find(&users)
 
 	// Display JSON result
-	return c.JSON(http.StatusOK, map[string][]Users{
+	return c.JSON(http.StatusOK, map[string]interface{}{
 		"data": users,
 	})
 }
@@ -60,10 +60,12 @@ func getUser(c echo.Context) error {
 
 	if user.ID != 0 {
 		// Display JSON result
-		return c.JSON(http.StatusOK, user)
+		return c.JSON(http.StatusOK, map[string]interface{}{
+			"data": user,
+		})
 	} else {
 		// Display JSON error
-		return c.JSON(http.StatusNotFound, map[string]string{
+		return c.JSON(http.StatusNotFound, map[string]interface{}{
 			"error": "User not found",
 		})
 	}
@@ -94,12 +96,12 @@ func updateUser(c echo.Context) error {
 			// UPDATE users SET firstname='newUser.Firstname', lastname='newUser.Lastname' WHERE id = user.Id;
 			db.Save(&user)
 			// Display modified data in JSON message "success"
-			return c.JSON(http.StatusOK, map[string]Users{
+			return c.JSON(http.StatusOK, map[string]interface{}{
 				"success": user,
 			})
 		} else {
 			// Display JSON error
-			return c.JSON(http.StatusUnprocessableEntity, map[string]string{
+			return c.JSON(http.StatusUnprocessableEntity, map[string]interface{}{
 				"error": "Fields are empty",
 			})
 		}
@@ -128,8 +130,8 @@ func deleteUser(c echo.Context) error {
 		// DELETE FROM users WHERE id = user.Id
 		db.Delete(&user)
 		// Display JSON result
-		return c.JSON(http.StatusOK, map[string]int{
-			"success": id,
+		return c.JSON(http.StatusOK, map[string]interface{}{
+			"success": "User #" + id + " deleted",
 		})
 	} else {
 		// Display JSON error
