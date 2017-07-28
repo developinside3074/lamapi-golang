@@ -7,12 +7,6 @@ import (
 	"github.com/labstack/echo"
 )
 
-type Users struct {
-	Id        int    `gorm:"AUTO_INCREMENT" form:"id" json:"id"`
-	Firstname string `gorm:"not null" form:"firstname" json:"firstname"`
-	Lastname  string `gorm:"not null" form:"lastname" json:"lastname"`
-}
-
 func createUser(c echo.Context) error {
 	db := initDB()
 	defer db.Close()
@@ -58,7 +52,7 @@ func getUser(c echo.Context) error {
 	// SELECT * FROM users WHERE id = 1;
 	db.First(&user, id)
 
-	if user.Id != 0 {
+	if user.ID != 0 {
 		// Display JSON result
 		return c.JSON(http.StatusOK, user)
 	} else {
@@ -79,30 +73,28 @@ func updateUser(c echo.Context) error {
 	// SELECT * FROM users WHERE id = 1;
 	db.First(&user, id)
 
-	if user.Firstname != "" && user.Lastname != "" {
+	if user.ID != 0 {
 
-		if user.Id != 0 {
-			var newUser Users
-			c.Bind(&newUser)
+		var newUser Users
+		c.Bind(&newUser)
 
-			result := Users{
-				Id:        user.Id,
-				Firstname: newUser.Firstname,
-				Lastname:  newUser.Lastname,
-			}
+		if newUser.Firstname != "" && newUser.Lastname != "" {
+			// Update field
+			user.Firstname = newUser.Firstname
+			user.Lastname = newUser.Lastname
 
 			// UPDATE users SET firstname='newUser.Firstname', lastname='newUser.Lastname' WHERE id = user.Id;
-			db.Save(&result)
+			db.Save(&user)
 			// Display modified data in JSON message "success"
-			return c.JSON(http.StatusOK, result)
+			return c.JSON(http.StatusOK, user)
 		} else {
 			// Display JSON error
-			return c.JSON(http.StatusNotFound, "User not found")
+			return c.JSON(http.StatusUnprocessableEntity, "Fields are empty")
 		}
 
 	} else {
 		// Display JSON error
-		return c.JSON(http.StatusUnprocessableEntity, "Fields are empty")
+		return c.JSON(http.StatusNotFound, "User not found")
 	}
 }
 
@@ -118,7 +110,7 @@ func deleteUser(c echo.Context) error {
 	// SELECT * FROM users WHERE id = 1;
 	db.First(&user, id)
 
-	if user.Id != 0 {
+	if user.ID != 0 {
 		// DELETE FROM users WHERE id = user.Id
 		db.Delete(&user)
 		// Display JSON result

@@ -23,11 +23,7 @@ func initDB() *gorm.DB {
 		panic(err)
 	}
 
-	// Creating the table
-	if !db.HasTable(&Users{}) {
-		db.CreateTable(&Users{})
-		db.Set("gorm:table_options", "OIDS = FALSE").CreateTable(&Users{})
-	}
+	initDbUser(db)
 
 	return db
 }
