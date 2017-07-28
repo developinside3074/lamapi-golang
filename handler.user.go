@@ -18,10 +18,14 @@ func createUser(c echo.Context) error {
 		// INSERT INTO "users" (name) VALUES (user.Name);
 		db.Create(&user)
 		// Display JSON result
-		return c.JSON(http.StatusCreated, user)
+		return c.JSON(http.StatusCreated, map[string]Users{
+			"data": user,
+		})
 	} else {
 		// Display error
-		return c.JSON(http.StatusUnprocessableEntity, "Fields are empty")
+		return c.JSON(http.StatusUnprocessableEntity, map[string]string{
+			"error": "Fields are empty",
+		})
 	}
 
 	// curl -i -X POST -H "Content-Type: application/json" -d "{ \"firstname\": \"Thea\", \"lastname\": \"Queen\" }" http://localhost:8080/api/v1/users
@@ -38,7 +42,9 @@ func getUsers(c echo.Context) error {
 	db.Find(&users)
 
 	// Display JSON result
-	return c.JSON(http.StatusOK, users)
+	return c.JSON(http.StatusOK, map[string][]Users{
+		"data": users,
+	})
 }
 
 func getUser(c echo.Context) error {
@@ -57,7 +63,9 @@ func getUser(c echo.Context) error {
 		return c.JSON(http.StatusOK, user)
 	} else {
 		// Display JSON error
-		return c.JSON(http.StatusNotFound, "User not found")
+		return c.JSON(http.StatusNotFound, map[string]string{
+			"error": "User not found",
+		})
 	}
 }
 
@@ -86,15 +94,21 @@ func updateUser(c echo.Context) error {
 			// UPDATE users SET firstname='newUser.Firstname', lastname='newUser.Lastname' WHERE id = user.Id;
 			db.Save(&user)
 			// Display modified data in JSON message "success"
-			return c.JSON(http.StatusOK, user)
+			return c.JSON(http.StatusOK, map[string]Users{
+				"success": user,
+			})
 		} else {
 			// Display JSON error
-			return c.JSON(http.StatusUnprocessableEntity, "Fields are empty")
+			return c.JSON(http.StatusUnprocessableEntity, map[string]string{
+				"error": "Fields are empty",
+			})
 		}
 
 	} else {
 		// Display JSON error
-		return c.JSON(http.StatusNotFound, "User not found")
+		return c.JSON(http.StatusNotFound, map[string]string{
+			"error": "User not found",
+		})
 	}
 }
 
@@ -114,9 +128,13 @@ func deleteUser(c echo.Context) error {
 		// DELETE FROM users WHERE id = user.Id
 		db.Delete(&user)
 		// Display JSON result
-		return c.JSON(http.StatusOK, id)
+		return c.JSON(http.StatusOK, map[string]int{
+			"success": id,
+		})
 	} else {
 		// Display JSON error
-		return c.JSON(http.StatusNotFound, "User not found")
+		return c.JSON(http.StatusNotFound, map[string]string{
+			"error": "User not found",
+		})
 	}
 }
