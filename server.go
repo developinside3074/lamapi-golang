@@ -3,15 +3,6 @@ package main
 import (
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
-	_ "github.com/lib/pq"
-)
-
-const (
-	dbHost     = "localhost"
-	dbPort     = 5432
-	dbUser     = "postgres"
-	dbPassword = "postgres"
-	dbName     = "test"
 )
 
 func main() {
@@ -40,8 +31,8 @@ func main() {
 	e.POST("/users", createUser)
 	e.GET("/users", getUsers)
 	e.GET("/user/:id", getUser)
-	e.PUT("/users/:id", updateUser)
-	e.DELETE("/users/:id", deleteUser)
+	e.PUT("/user/:id", updateUser)
+	e.DELETE("/user/:id", deleteUser)
 
 	// Start server
 	e.Logger.Fatal(e.Start(":1323"))

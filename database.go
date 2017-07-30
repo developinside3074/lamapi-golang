@@ -7,6 +7,14 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 )
 
+const (
+	dbHost     = "localhost"
+	dbPort     = 5432
+	dbUser     = "postgres"
+	dbPassword = "postgres"
+	dbName     = "test"
+)
+
 func initDB() *gorm.DB {
 	// Openning file
 	connectionString := fmt.Sprintf("host=%s port=%d user=%s "+
