@@ -131,7 +131,7 @@ func deleteUser(c echo.Context) error {
 		db.Delete(&user)
 		// Display JSON result
 		return c.JSON(http.StatusOK, map[string]interface{}{
-			"success": "User #" + id + " deleted",
+			"success": "User #" + strconv.Itoa(id) + " deleted",
 		})
 	} else {
 		// Display JSON error
