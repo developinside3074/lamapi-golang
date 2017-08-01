@@ -18,15 +18,14 @@ func createUser(c echo.Context) error {
 		// INSERT INTO "users" (name) VALUES (user.Name);
 		db.Create(&user)
 		// Display JSON result
-		return c.JSON(http.StatusCreated, map[string]interface{}{
+		return c.JSON(http.StatusCreated, echo.Map{
 			"data": user,
 		})
-	} else {
-		// Display error
-		return c.JSON(http.StatusUnprocessableEntity, map[string]interface{}{
-			"error": "Fields are empty",
-		})
 	}
+	// Display error
+	return c.JSON(http.StatusUnprocessableEntity, echo.Map{
+		"error": "Fields are empty",
+	})
 
 	// curl -i -X POST -H "Content-Type: application/json" -d "{ \"firstname\": \"Thea\", \"lastname\": \"Queen\" }" http://localhost:8080/api/v1/users
 }
@@ -42,7 +41,7 @@ func getUsers(c echo.Context) error {
 	db.Find(&users)
 
 	// Display JSON result
-	return c.JSON(http.StatusOK, map[string]interface{}{
+	return c.JSON(http.StatusOK, echo.Map{
 		"data": users,
 	})
 }
@@ -60,15 +59,14 @@ func getUser(c echo.Context) error {
 
 	if user.ID != 0 {
 		// Display JSON result
-		return c.JSON(http.StatusOK, map[string]interface{}{
+		return c.JSON(http.StatusOK, echo.Map{
 			"data": user,
 		})
-	} else {
-		// Display JSON error
-		return c.JSON(http.StatusNotFound, map[string]interface{}{
-			"error": "User not found",
-		})
 	}
+	// Display JSON error
+	return c.JSON(http.StatusNotFound, echo.Map{
+		"error": "User not found",
+	})
 }
 
 func updateUser(c echo.Context) error {
@@ -96,22 +94,20 @@ func updateUser(c echo.Context) error {
 			// UPDATE users SET firstname='newUser.Firstname', lastname='newUser.Lastname' WHERE id = user.Id;
 			db.Save(&user)
 			// Display modified data in JSON message "success"
-			return c.JSON(http.StatusOK, map[string]interface{}{
+			return c.JSON(http.StatusOK, echo.Map{
 				"success": user,
 			})
-		} else {
-			// Display JSON error
-			return c.JSON(http.StatusUnprocessableEntity, map[string]interface{}{
-				"error": "Fields are empty",
-			})
 		}
-
-	} else {
 		// Display JSON error
-		return c.JSON(http.StatusNotFound, map[string]string{
-			"error": "User not found",
+		return c.JSON(http.StatusUnprocessableEntity, echo.Map{
+			"error": "Fields are empty",
 		})
+
 	}
+	// Display JSON error
+	return c.JSON(http.StatusNotFound, echo.Map{
+		"error": "User not found",
+	})
 }
 
 func deleteUser(c echo.Context) error {
@@ -130,13 +126,12 @@ func deleteUser(c echo.Context) error {
 		// DELETE FROM users WHERE id = user.Id
 		db.Delete(&user)
 		// Display JSON result
-		return c.JSON(http.StatusOK, map[string]interface{}{
+		return c.JSON(http.StatusOK, echo.Map{
 			"success": "User #" + strconv.Itoa(id) + " deleted",
 		})
-	} else {
-		// Display JSON error
-		return c.JSON(http.StatusNotFound, map[string]string{
-			"error": "User not found",
-		})
 	}
+	// Display JSON error
+	return c.JSON(http.StatusNotFound, echo.Map{
+		"error": "User not found",
+	})
 }
