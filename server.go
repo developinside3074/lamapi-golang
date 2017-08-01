@@ -27,12 +27,20 @@ func main() {
 	// 	AllowMethods: []string{echo.GET, echo.PUT, echo.POST, echo.DELETE},
 	// }))
 
+	config := middleware.JWTConfig{
+		Claims:     &jwtCustomClaims{},
+		SigningKey: []byte("secret"),
+	}
+
 	// Routes
-	e.POST("/users", createUser)
+	// -- Auth route
+	e.POST("/login", login)
+
+	e.POST("/users", createUser, middleware.JWTWithConfig(config))
 	e.GET("/users", getUsers)
 	e.GET("/user/:id", getUser)
-	e.PUT("/user/:id", updateUser)
-	e.DELETE("/user/:id", deleteUser)
+	e.PUT("/user/:id", updateUser, middleware.JWTWithConfig(config))
+	e.DELETE("/user/:id", deleteUser, middleware.JWTWithConfig(config))
 
 	// Start server
 	e.Logger.Fatal(e.Start(":1323"))
