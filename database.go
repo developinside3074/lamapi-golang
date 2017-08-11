@@ -1,37 +1,26 @@
 package main
 
 import (
-	"fmt"
+	"lamapi/models"
 
-	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/postgres"
+	"github.com/go-pg/pg"
 )
 
-const (
-	dbHost     = "localhost"
-	dbPort     = 5432
-	dbUser     = "postgres"
-	dbPassword = "postgres"
-	dbName     = "test"
-)
-
-func initDB() *gorm.DB {
-	// Openning file
-	connectionString := fmt.Sprintf("host=%s port=%d user=%s "+
-		"password=%s dbname=%s sslmode=disable",
-		dbHost, dbPort, dbUser, dbPassword, dbName)
-
-	db, err := gorm.Open("postgres", connectionString)
-
-	// Display SQL queries
-	db.LogMode(true)
-
-	// Error
-	if err != nil {
-		panic(err)
-	}
-
-	initDbUser(db)
-
+func initDB() *pg.DB {
+	db := pg.Connect(&pg.Options{
+		User:     "postgres",
+		Password: "postgres",
+		Database: "test",
+	})
 	return db
+}
+
+func createSchema(db *pg.DB) error {
+	for _, model := range []interface{}{&models.Task{}} {
+		err := db.CreateTable(model, nil)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }

@@ -1,13 +1,29 @@
 package main
 
 import (
+	"lamapi/handlers"
+	"log"
+	"time"
+
+	"github.com/go-pg/pg"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 )
 
 func main() {
 	// Initial Database
-	initDB()
+	db := initDB()
+
+	db.OnQueryProcessed(func(event *pg.QueryProcessedEvent) {
+		query, err := event.FormattedQuery()
+		if err != nil {
+			panic(err)
+		}
+
+		log.Printf("%s %s", time.Since(event.StartTime), query)
+	})
+
+	createSchema(db)
 
 	e := echo.New()
 
@@ -27,20 +43,15 @@ func main() {
 	// 	AllowMethods: []string{echo.GET, echo.PUT, echo.POST, echo.DELETE},
 	// }))
 
-	config := middleware.JWTConfig{
-		Claims:     &jwtCustomClaims{},
-		SigningKey: []byte("secret"),
-	}
+	// config := middleware.JWTConfig{
+	// 	Claims:     &jwtCustomClaims{},
+	// 	SigningKey: []byte("secret"),
+	// }
 
 	// Routes
-	// -- Auth route
-	e.POST("/login", login)
-
-	e.POST("/users", createUser, middleware.JWTWithConfig(config))
-	e.GET("/users", getUsers)
-	e.GET("/user/:id", getUser)
-	e.PUT("/user/:id", updateUser, middleware.JWTWithConfig(config))
-	e.DELETE("/user/:id", deleteUser, middleware.JWTWithConfig(config))
+	e.GET("/tasks", handlers.GetTasks(db))
+	e.PUT("/tasks", handlers.PutTask(db))
+	e.DELETE("/tasks/:id", handlers.DeleteTask(db))
 
 	// Start server
 	e.Logger.Fatal(e.Start(":1323"))
